@@ -1,0 +1,126 @@
+#include "scanner.h"
+
+#define debug
+
+typedef struct {
+  const char* source;
+  uint64_t len;
+  uint64_t index;
+  char* previus;
+  uint16_t line;
+} Code;
+
+Code code;
+
+char* translateTokenType(TokenType type) {
+  switch (type) {
+	  case TOKEN_ERR: return "TOKEN_ERR";
+	  case TOKEN_EOF: return "TOKEN_EOF";
+	  case TOKEN_RETURN: return "TOKEN_RETURN";
+	  case TOKEN_INPUT: return "TOKEN_INPUT";
+	  case TOKEN_PRINT: return "TOKEN_PRINT";
+	  case TOKEN_LE: return "TOKEN_LE";
+	  case TOKEN_GE: return "TOKEN_GE";
+	  case TOKEN_LT: return "TOKEN_LT";
+	  case TOKEN_GT: return "TOKEN_GT";
+	  case TOKEN_EQ: return "TOKEN_EQ";
+	  case TOKEN_DIV: return "TOKEN_DIV";
+	  case TOKEN_MULT: return "TOKEN_MULT";
+	  case TOKEN_DEC: return "TOKEN_DEC";
+	  case TOKEN_ADD: return "TOKEN_ADD";
+	  case TOKEN_TYPE: return "TOKEN_TYPE";
+	  case TOKEN_RANGE: return "TOKEN_RANGE";
+	  case TOKEN_REF: return "TOKEN_REF";
+	  case TOKEN_IDENT: return "TOKEN_IDENT";
+	  case TOKEN_BOOL: return "TOKEN_BOOL";
+	  case TOKEN_STR: return "TOKEN_STR";
+	  case TOKEN_NUM: return "TOKEN_NUM";
+  }
+  return "No handle Token Type";
+}
+
+void printToken(Token token) {
+
+}
+
+void loadSource(const char* source) {
+  code.source = source;
+  code.len = strlen(source);
+  code.index = 0;
+  code.line = 0;
+  code.previus = 0;
+}
+
+_Bool isEnd() {
+  return code.index >= code.len;
+}
+
+char peek() {
+  if (isEnd()) return '\0';
+  return code.source[code.index];
+}
+
+char advance() {
+  code.index++;
+  return peek();
+}
+
+void skipWhitespaces() {
+  while(true) {
+    switch (peek()) {
+    case '\n':
+      code.line++;
+    case ' ':
+    case '\t':
+      advance();
+    default:
+      return;
+    }
+  }
+}
+
+Token makeToken(TokenType type) {
+  return (Token) {
+    .type = type,
+    .line = code.line,
+    .start = code.previus,
+    .len = code.index++ - (uint64_t) code.previus,
+  };
+}
+
+Token makeErr(const char* err) {
+  return (Token) {
+    .type = TOKEN_ERR,
+    .start = err,
+    .len = strlen(err),
+    .line = code.line,
+  };
+}
+
+_Bool isNumeric(char n) {
+  return n >= '0' && n <= '9';
+}
+
+_Bool isAlpha(char s) {
+  return (s >= 'A' && s <= 'Z') || (s >= 'a' && <= 'z') || s == '_';
+}
+
+_Bool isAlphanumeric(char c) {
+  return isNumeric(c) || isAlpha(c);
+}
+
+Token getToken() {
+  skipWhitespaces();
+  if (isEnd())
+    return makeToken(TOKEN_EOF);
+  switch (peek()) {
+  case '+': return makeToken(TOKEN_ADD);
+  case '-': return makeToken(TOKEN_DEC);
+  case '*': return makeToken(TOKEN_MULT);
+  case '/': return makeToken(TOKEN_DIV);
+    //  case '"': return
+  default:
+    ;
+  }
+  return makeErr("Simbolo no reconocido");
+}

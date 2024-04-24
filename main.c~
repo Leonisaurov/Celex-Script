@@ -1,0 +1,7 @@
+#include "scanner.h"
+
+int main(int argc, char* argv[]) {
+  loadSource("+++");
+  Token token = getToken();
+  return 0;
+}

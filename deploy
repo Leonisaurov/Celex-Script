@@ -1,0 +1,4 @@
+#!/bin/bash
+set -x
+gcc *.c -o celexs -fsanitize=address -lstring && cp celexs $BIN
+set +x

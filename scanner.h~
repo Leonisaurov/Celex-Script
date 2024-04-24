@@ -1,0 +1,39 @@
+#ifndef CELEX_SCRIPT_SCANNER
+#define CELEX_SCRIPT_SCANNER
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define true 1
+#define false 0
+
+typedef enum {
+  // Numero, String, Booleano, Indentificador
+  TOKEN_NUM, TOKEN_STR, TOKEN_BOOL, TOKEN_IDENT,
+  // Referencia, Rango
+  TOKEN_REF, TOKEN_RANGE,
+  // Tipo de dato
+  TOKEN_TYPE,
+  // +, -, *, /
+  TOKEN_ADD, TOKEN_DEC, TOKEN_MULT, TOKEN_DIV,
+  // ==, >, <, >=, <=
+  TOKEN_EQ, TOKEN_GT, TOKEN_LT, TOKEN_GE, TOKEN_LE,
+  // imprimir, leer, retornar
+  TOKEN_PRINT, TOKEN_INPUT, TOKEN_RETURN,
+  // Final
+  TOKEN_EOF,
+  // Error
+  TOKEN_ERR,
+} TokenType;
+
+typedef struct {
+  TokenType type;
+  const char* start;
+  uint64_t len;
+  uint16_t line;
+} Token;
+
+void loadSource(const char* source);
+Token getToken();
+
+#endif
